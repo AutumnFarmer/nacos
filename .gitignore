@@ -4,3 +4,8 @@ nacos/
 .DS_Store
 .idea/
 *.iml
+
+# Eclipse
+.classpath
+.project
+.settings/
