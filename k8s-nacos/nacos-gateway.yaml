@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nacos-gateway
+  labels:
+    app: nacos-gateway
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nacos-gateway
+  template:
+    metadata:
+      labels:
+        app: nacos-gateway
+    spec:
+      containers:
+      - name: nacos-gateway
+        image: nacos-gateway:v1
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 8080
+        volumeMounts:
+        - name: config-volume
+          mountPath: /config/application.yml
+          subPath: application.yml
+      volumes:
+      - name: config-volume
+        configMap:
+          name: nacos-gateway-config
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: nacos-gateway-service
+spec:
+  type: LoadBalancer        # 重点：Gateway 使用 LoadBalancer 暴露给外部
+  selector:
+    app: nacos-gateway
+  ports:
+    - protocol: TCP
+      port: 80              # 外部访问端口 (类似 Nginx)
+      targetPort: 8080      # 内部容器端口

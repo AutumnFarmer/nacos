@@ -1,0 +1,61 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nacos-provider
+  labels:
+    app: nacos-provider
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nacos-provider
+  template:
+    metadata:
+      labels:
+        app: nacos-provider
+    spec:
+      containers:
+      - name: nacos-provider
+        image: nacos-provider:v1
+        imagePullPolicy: IfNotPresent  # 优先使用本地镜像
+        ports:
+        - containerPort: 8080
+        volumeMounts:
+        - name: config-volume
+          mountPath: /config/application.yml
+          subPath: application.yml
+      volumes:
+      - name: config-volume
+        configMap:
+          name: nacos-provider-config
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nacos-consumer
+  labels:
+    app: nacos-consumer
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nacos-consumer
+  template:
+    metadata:
+      labels:
+        app: nacos-consumer
+    spec:
+      containers:
+      - name: nacos-consumer
+        image: nacos-consumer:v1
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 8080
+        volumeMounts:
+        - name: config-volume
+          mountPath: /config/application.yml
+          subPath: application.yml
+      volumes:
+      - name: config-volume
+        configMap:
+          name: nacos-consumer-config

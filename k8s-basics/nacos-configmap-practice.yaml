@@ -1,0 +1,48 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: nacos-consumer-config
+data:
+  application.yml: |
+    server:
+      port: 8080
+    spring:
+      application:
+        name: nacos-consumer
+      cloud:
+        nacos:
+          discovery:
+            server-addr: nacos-headless-service:8848
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: nacos-provider-config
+data:
+  application.yml: |
+    server:
+      port: 8080
+    spring:
+      application:
+        name: nacos-provider
+      cloud:
+        nacos:
+          discovery:
+            server-addr: nacos-headless-service:8848
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: nacos-gateway-config
+data:
+  application.yml: |
+    server:
+      port: 8080
+    spring:
+      application:
+        name: nacos-gateway
+      cloud:
+        nacos:
+          discovery:
+            server-addr: nacos-headless-service:8848
+

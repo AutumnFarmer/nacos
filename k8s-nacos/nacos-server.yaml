@@ -1,0 +1,68 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nacos-server
+  labels:
+    app: nacos-server
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nacos-server
+  template:
+    metadata:
+      labels:
+        app: nacos-server
+    spec:
+      containers:
+      - name: nacos-server
+        image: nacos/nacos-server:v2.4.3
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 8848
+        - containerPort: 9848
+        resources:
+          requests:
+            memory: "512Mi"
+            cpu: "500m"
+        env:
+        - name: MODE
+          value: "standalone"
+        - name: PREFER_HOST_MODE
+          value: "hostname"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: nacos-headless-service
+  labels:
+    app: nacos-server
+spec:
+  type: ClusterIP
+  clusterIP: None
+  ports:
+  - port: 8848
+    name: server
+    targetPort: 8848
+  - port: 9848
+    name: client-rpc
+    targetPort: 9848
+  selector:
+    app: nacos-server
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: nacos-service-nodeport
+  labels:
+    app: nacos-server
+spec:
+  type: NodePort
+  ports:
+  - port: 8848
+    name: server
+    targetPort: 8848
+    nodePort: 30048 
+  selector:
+    app: nacos-server
